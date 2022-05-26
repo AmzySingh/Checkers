@@ -1,10 +1,15 @@
 
-class CheckerBoard:
-    starting_position = (100, 100)
-    box_length = 100
-    all_board_bits = []
+from typing import Generic, List, Any, ClassVar, TypeVar
 
-    def __init__(self, column, row, contains_piece):
+
+
+class CheckerBoard:
+    #CheckerBoard = TypeVar('CheckerBoard')
+    starting_position: ClassVar[tuple[int, int]] = (100, 100)
+    box_length: ClassVar[int] = 100
+    all_board_bits: ClassVar[List[Any]] = []
+
+    def __init__(self, column: int, row: int, contains_piece):
         self.column = column
         self.row = row
         self.contains_piece = contains_piece
@@ -13,9 +18,9 @@ class CheckerBoard:
         self.y = self.starting_position[1] + (self.row - 1)*self.box_length
         self.colour = (self.row + self.column)%2
         self.center = (self.x + self.side_length/2, self.y + self.side_length/2)
-
+    
     @classmethod
-    def find_clicked_box(cls, coords: tuple[int]) :
+    def find_clicked_box(cls, coords: tuple[int, int]) :
         for square in cls.all_board_bits:
             if coords[0] >= square.x and coords[0] < (square.x + square.side_length) and coords[1] >= square.y and coords[1] < (square.y + square.side_length):
                 return square

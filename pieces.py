@@ -1,4 +1,3 @@
-from selectors import EpollSelector
 from checkers_board import CheckerBoard
 from typing import List
 

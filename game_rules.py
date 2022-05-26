@@ -1,3 +1,4 @@
+from typing import List, Tuple, Optional
 from pieces import Piece
 from checkers_board import CheckerBoard
 
@@ -18,7 +19,7 @@ class GameRules:
             possible_num.append(num+1)
     
     @staticmethod
-    def get_valid_square_to_move(piece: Piece) -> list[CheckerBoard]:
+    def get_valid_square_to_move(piece: Piece) -> List[Tuple[CheckerBoard, Optional[Piece]]]:
         current_square: CheckerBoard = piece.get_square()
         col: int = current_square.column
         row: int = current_square.row
@@ -39,7 +40,7 @@ class GameRules:
         
         valid_col_row.remove((col, row))
 
-        backwards_move = []
+        backwards_move: List[Tuple[int, int]] = []
         if piece.is_crown is False:
             for col_row in valid_col_row:
                 if col_row[1] <= piece.col_row[1] and piece.is_white is False:
@@ -47,10 +48,10 @@ class GameRules:
                 elif col_row[1] >= piece.col_row[1] and piece.is_white is True:
                     backwards_move.append(col_row)
             
-            for i in backwards_move:
-                valid_col_row.remove(i)
+            for (i, j) in backwards_move:
+                valid_col_row.remove((i, j))
 
-        valid_squares: list[(CheckerBoard, Piece)] = []
+        valid_squares: List[Tuple[CheckerBoard, Optional[Piece]]] = []
 
         for col_row in valid_col_row:
             square: CheckerBoard = CheckerBoard.get_box_by_col_row(col_row)

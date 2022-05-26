@@ -1,4 +1,6 @@
+
 import pygame
+from typing import Optional
 from game_rules import GameRules
 from checkers_board import CheckerBoard
 from pieces import Piece
@@ -58,7 +60,7 @@ def draw_squares(all_square):
 
         pygame.draw.rect(WIN, colour, rect)
 
-def process_click(click_location: tuple[int]):
+def process_click(click_location: tuple[int, int]):
     return CheckerBoard.find_clicked_box(click_location)
 
 def select_piece(piece: Piece) -> bool:
@@ -80,16 +82,16 @@ def unselect_piece():
         piece.colour = BLACK_PIECE
 
 def move_piece(box: CheckerBoard):
-    selected_piece: Piece = None
+    selected_piece: Optional[Piece] = None
     for i in all_piece:
         if i.is_selected == True:
             selected_piece = i
 
     box.contains_piece = selected_piece
-    selected_piece.change_position(box)
-
-    if GameRules.whites_turn == selected_piece.is_white:
-        GameRules.whites_turn = not GameRules.whites_turn
+    if selected_piece is not None:
+        selected_piece.change_position(box)
+        if GameRules.whites_turn == selected_piece.is_white:
+            GameRules.whites_turn = not GameRules.whites_turn
 
 
 
