@@ -115,7 +115,6 @@ def main():
         clock.tick(FPS)
         draw()
 
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
