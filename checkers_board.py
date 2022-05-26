@@ -1,15 +1,15 @@
-
-from typing import Generic, List, Any, ClassVar, TypeVar
-
-
+#from pieces import Piece
+from config import GameConfig
+from typing import List, Any, ClassVar, Optional, Tuple
 
 class CheckerBoard:
     #CheckerBoard = TypeVar('CheckerBoard')
-    starting_position: ClassVar[tuple[int, int]] = (100, 100)
-    box_length: ClassVar[int] = 100
+    starting_position: ClassVar[tuple[int, int]] = (GameConfig.BOARD_START_X, GameConfig.BOARD_START_Y)
+    box_length: ClassVar[int] = GameConfig.WIDTH//10
     all_board_bits: ClassVar[List[Any]] = []
+    
 
-    def __init__(self, column: int, row: int, contains_piece):
+    def __init__(self, column: int, row: int, contains_piece: Optional[Any]):
         self.column = column
         self.row = row
         self.contains_piece = contains_piece
@@ -18,6 +18,8 @@ class CheckerBoard:
         self.y = self.starting_position[1] + (self.row - 1)*self.box_length
         self.colour = (self.row + self.column)%2
         self.center = (self.x + self.side_length/2, self.y + self.side_length/2)
+
+        self.all_board_bits.append(self)
     
     @classmethod
     def find_clicked_box(cls, coords: tuple[int, int]) :
@@ -35,16 +37,16 @@ class CheckerBoard:
                 return square
 
 
-
     @classmethod
     def create_all_boxes(cls):
+        #all_squares: List[CheckerBoard] = []
         for column in range(1, 9):
             for row in range(1, 9):
                 piece = cls(column, row, None)
-                cls.all_board_bits.append(piece)
+                #cls.all_squares.append(piece)
+        #return all_squares
 
-
-    def jump_over(self, other):
+    def jump_over(self, other) -> Optional[Tuple[int, int]]:
         col_change = self.column - other.column
         row_change = self.row - other.row
 

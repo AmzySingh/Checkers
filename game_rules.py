@@ -48,8 +48,8 @@ class GameRules:
                 elif col_row[1] >= piece.col_row[1] and piece.is_white is True:
                     backwards_move.append(col_row)
             
-            for (i, j) in backwards_move:
-                valid_col_row.remove((i, j))
+            for tup in backwards_move:
+                valid_col_row.remove(tup)
 
         valid_squares: List[Tuple[CheckerBoard, Optional[Piece]]] = []
 
@@ -61,7 +61,7 @@ class GameRules:
                 jump_square_coord = current_square.jump_over(square)
                 if jump_square_coord is not None:
                     valid_squares.append((CheckerBoard.get_box_by_col_row(jump_square_coord), square.contains_piece))
-        
+        print(valid_squares)
         return valid_squares
 
 

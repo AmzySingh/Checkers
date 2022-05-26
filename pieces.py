@@ -1,14 +1,19 @@
 from checkers_board import CheckerBoard
-from typing import List
+from config import Colours
+from typing import ClassVar, List
 
 class Piece:
+    radius: ClassVar[float] = CheckerBoard.box_length * 0.4
+    crown_radius: ClassVar[float] = radius*0.7
+    white_crown_colour = Colours.WHITE_CROWN
+    black_crown_colour = Colours.BLACK_CROWN
     def __init__(self, col_row, is_white):
         self.col_row = col_row
         self.coord = (0, 0)
         self.is_white = is_white
         self.colour = None
         self.is_crown = False
-        self.radius = 40
+        #self.radius = CheckerBoard.box_length * 0.4
         self.is_selected = False
         self.is_dead = False
 

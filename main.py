@@ -1,25 +1,16 @@
 
 import pygame
+from config import GameConfig, Colours
 from typing import Optional
 from game_rules import GameRules
 from checkers_board import CheckerBoard
 from pieces import Piece
 
-WIDTH, HEIGHT = 1000, 1000
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+
+WIN = pygame.display.set_mode((GameConfig.WIDTH, GameConfig.HEIGHT))
 pygame.display.set_caption("Checkers")
 
-FPS = 30
-
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-SELECTED_COLOUR = (255, 0, 0)
-BACKGROUND_COLOUR = (103, 20, 13)
-
-BLACK_PIECE = (103, 68, 10)
-WHITE_PIECE = (221, 176, 99)
-
-BACKGROUND = pygame.Rect(0, 0, WIDTH, HEIGHT)
+BACKGROUND = pygame.Rect(0, 0, GameConfig.WIDTH, GameConfig.HEIGHT)
 
 CheckerBoard.create_all_boxes()
 
@@ -27,6 +18,12 @@ all_square = CheckerBoard.all_board_bits
 all_piece = Piece.initiate_pieces()
 
 def capture(piece: Piece):
+    #square: Optional[CheckerBoard] = None
+    for sqr in all_square:
+        if sqr.contains_piece is piece:
+            sqr.contains_piece = None
+
+    piece.coord = (0, 0)
     all_piece.remove(piece)
 
 def set_piece_coords_and_colour(piece_list, all_squares) -> None:
@@ -38,9 +35,9 @@ def set_piece_coords_and_colour(piece_list, all_squares) -> None:
 
 def set_piece_colour(piece: Piece):
     if piece.is_white == True:
-        piece.colour = WHITE_PIECE
+        piece.colour = Colours.WHITE_PIECE
     else:
-        piece.colour = BLACK_PIECE
+        piece.colour = Colours.BLACK_PIECE
 
 
 def get_selected_piece():
@@ -54,9 +51,9 @@ def draw_squares(all_square):
 
         colour = 0
         if piece.colour == 0:
-            colour = WHITE
+            colour = Colours.WHITE
         else:
-            colour = BLACK
+            colour = Colours.BLACK
 
         pygame.draw.rect(WIN, colour, rect)
 
@@ -66,7 +63,7 @@ def process_click(click_location: tuple[int, int]):
 def select_piece(piece: Piece) -> bool:
     if GameRules.whites_turn == piece.is_white:
         piece.is_selected = True
-        piece.colour = SELECTED_COLOUR
+        piece.colour = Colours.SELECTED_COLOUR
         #GameRules.whites_turn = not GameRules.whites_turn
         return True
     else:
@@ -77,31 +74,41 @@ def unselect_piece():
     piece = get_selected_piece()
     piece.is_selected = False
     if piece.is_white == True:
-        piece.colour = WHITE_PIECE
+        piece.colour = Colours.WHITE_PIECE
     else:
-        piece.colour = BLACK_PIECE
+        piece.colour = Colours.BLACK_PIECE
 
 def move_piece(box: CheckerBoard):
     selected_piece: Optional[Piece] = None
     for i in all_piece:
         if i.is_selected == True:
             selected_piece = i
+    if box.contains_piece is None:
+        box.contains_piece = selected_piece
+        if selected_piece is not None:
+            selected_piece.change_position(box)
+            if GameRules.whites_turn == selected_piece.is_white:
+                GameRules.whites_turn = not GameRules.whites_turn
 
-    box.contains_piece = selected_piece
-    if selected_piece is not None:
-        selected_piece.change_position(box)
-        if GameRules.whites_turn == selected_piece.is_white:
-            GameRules.whites_turn = not GameRules.whites_turn
+            Piece.check_to_crown(selected_piece)
+        return True
+    else:
+        return False
 
 
 
 def draw():
-    pygame.draw.rect(WIN, BACKGROUND_COLOUR, BACKGROUND)
+    pygame.draw.rect(WIN, Colours.BACKGROUND_COLOUR, BACKGROUND)
     draw_squares(all_square)
     
     for piece in all_piece:
         if piece.is_dead is False:
             pygame.draw.circle(WIN, piece.colour, piece.coord, piece.radius)
+            if piece.is_crown and piece.is_white:
+                pygame.draw.circle(WIN, piece.white_crown_colour, piece.coord, piece.crown_radius)
+            elif piece.is_crown and not piece.is_white:
+                pygame.draw.circle(WIN, piece.black_crown_colour, piece.coord, piece.crown_radius)
+
 
 
     pygame.display.update()
@@ -110,11 +117,11 @@ def main():
     clock = pygame.time.Clock()
 
 
-    piece_selected = False
-    run = True
+    piece_selected: bool = False
+    run: bool = True
     set_piece_coords_and_colour(all_piece, all_square)
     while run:
-        clock.tick(FPS)
+        clock.tick(GameConfig.FPS)
         draw()
 
         for event in pygame.event.get():
@@ -143,8 +150,8 @@ def main():
                     if valid_box_to_move is True:
                         move_piece(box)
                     elif isinstance(valid_box_to_move, Piece):
-                        move_piece(box)
-                        capture(valid_box_to_move)
+                        if move_piece(box):
+                            capture(valid_box_to_move)
                     unselect_piece()
 
     pygame.quit()

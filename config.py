@@ -1,0 +1,17 @@
+
+class GameConfig:
+    WIDTH, HEIGHT = 800, 800
+    BOARD_START_X, BOARD_START_Y = WIDTH//10, HEIGHT//10
+    FPS = 30
+
+class Colours:
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+    SELECTED_COLOUR = (255, 0, 0)
+    BACKGROUND_COLOUR = (103, 20, 13)
+
+    BLACK_PIECE = (103, 68, 10)
+    WHITE_PIECE = (221, 176, 99)
+
+    WHITE_CROWN = (255, 255, 0)
+    BLACK_CROWN = (67, 30, 11)
